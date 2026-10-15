@@ -1,0 +1,26 @@
+/* Sylvie's Senses */
+
+.sylvies-senses-tooltip {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 320px;
+  padding: 6px 10px;
+  border: 1px solid rgba(201, 161, 74, 0.7);
+  border-radius: 6px;
+  background: rgba(15, 12, 20, 0.92);
+  color: #f0e6d2;
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: pre-line;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.sylvies-senses-form .form-group { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+.sylvies-senses-form .form-group > label:first-child:not(.checkbox) { flex: 0 0 150px; }
+.sylvies-senses-form .form-group input[type="number"] { flex: 0 0 64px; width: 64px; }
+.sylvies-senses-form .form-group > span { flex: 0 0 auto; }
+.sylvies-senses-form .form-group select,
+.sylvies-senses-form .form-group input[type="text"] { flex: 1 1 auto; }
+.sylvies-senses-form .form-group label.checkbox { display: flex; align-items: center; gap: 6px; }
+.sylvies-senses-form .hint { margin: 0 0 6px; font-size: 0.85em; opacity: 0.75; }
