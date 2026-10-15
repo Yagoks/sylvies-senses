@@ -28,6 +28,12 @@ While the sense lasts:
 | Detect Magic | effects from spells (with the spell's school), magical items carried, tiles noted as magic | neutral rune; after examining, the school's rune |
 | Detect Poison and Disease | creatures with poison damage, poisoned/diseased creatures, poison items, tiles noted as poison/disease | poison markers |
 
+**Transformed creatures** (the system's *Transform*, e.g. a rakshasa turned into a commoner):
+- **Detect Evil and Good** reads the original creature's type. Polymorph and Wild Shape are the exception, because they
+  really change the type.
+- **Detect Magic** finds an aura: **illusion** for disguises and custom transformations, **transmutation** for Polymorph
+  and Wild Shape.
+
 **Detect Magic** follows the rules:
 1. At first you only sense *a magic aura*.
 2. Click an aura to spend your **Magic action** examining it (it posts to the chat and marks the action used with Midi).

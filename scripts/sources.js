@@ -73,9 +73,20 @@ export const schoolLabel = s => {
 
 export const EVIL_GOOD = ["aberration", "celestial", "elemental", "fey", "fiend", "undead"];
 
+/** A creature turned into another with the system's Transform: { original actor, preset }, else null. */
+function transformOf(actor) {
+  const f = actor?.flags?.dnd5e;
+  if (!f?.isPolymorphed) return null;
+  return { original: game.actors.get(f.originalActor) ?? null, preset: f.transformOptions?.preset ?? "" };
+}
+// Polymorph and Wild Shape really change the creature type; any other transformation is a disguise.
+const TRUE_CHANGE = new Set(["polymorph", "polymorphSelf", "wildshape"]);
+
 function creatureType(td) {
   const note = noteOf(td);
   if (note.trueType) return note.trueType;
+  const tf = transformOf(td.actor);
+  if (tf?.original && !TRUE_CHANGE.has(tf.preset)) return tf.original.system?.details?.type?.value ?? null;
   return td.actor?.system?.details?.type?.value ?? null;
 }
 
@@ -107,6 +118,8 @@ export function magicOf(placeable, isTile) {
   if (isTile) return out;
   const actor = doc.actor;
   if (!actor) return out;
+  const tf = transformOf(actor);
+  if (tf) out.push({ school: TRUE_CHANGE.has(tf.preset) ? "transmutation" : "illusion", what: "transformação" });
   for (const effect of actor.appliedEffects ?? []) {
     if (getF(effect, "poison")) continue;
     const origin = effect.origin ? fromUuidSync(effect.origin, { strict: false }) : null;
