@@ -28,23 +28,34 @@ const durationSeconds = d => {
 };
 
 /** The spell was cast: give the caster the sense, tied to concentration. */
-async function onUse(activity) {
+export async function onUse(activity) {
   const item = activity?.item;
   const actor = item?.actor;
   const sense = getF(item, "sense") ?? SENSES[item?.system?.identifier];
   if (!sense || !actor?.isOwner) return;
+  const concOf = e => e.statuses.has("concentrating") && (e.getFlag("dnd5e", "item")?.id === item.id || e.origin === item.uuid);
+  // Recast: the previous casting (its sense and its concentration) ends.
+  const oldConc = new Set(actor.effects.filter(concOf).map(e => e.id));
   const old = actor.effects.filter(e => getF(e, "sense") === sense);
-  if (old.length) await actor.deleteEmbeddedDocuments("ActiveEffect", old.map(e => e.id));
+  if (old.length) await actor.deleteEmbeddedDocuments("ActiveEffect", old.map(e => e.id).filter(id => actor.effects.has(id)));
   const [effect] = await actor.createEmbeddedDocuments("ActiveEffect", [{
     name: item.name, img: item.img, origin: item.uuid, transfer: false,
     duration: { seconds: durationSeconds(item.system.duration), startTime: game.time.worldTime },
     flags: { [MODULE_ID]: { sense, range: 30, revealed: false } }
   }]);
-  if (!effect || !item.system.properties?.has("concentration")) return;
-  // Tie it to the concentration effect so losing concentration ends the sense.
+  if (!effect) return;
+  // Never two senses of the same kind (a hook fired twice, a double click).
+  const dupes = actor.effects.filter(e => getF(e, "sense") === sense && e.id !== effect.id).map(e => e.id);
+  if (dupes.length) await actor.deleteEmbeddedDocuments("ActiveEffect", dupes);
+  if (!item.system.properties?.has("concentration")) return;
+  // Tie it to the new concentration effect so losing concentration ends the sense.
   for (let i = 0; i < 10; i++) {
-    const conc = actor.effects.find(e => e.statuses.has("concentrating") && (e.getFlag("dnd5e", "item")?.id === item.id || e.origin === item.uuid));
-    if (conc) return conc.addDependent(effect);
+    const conc = actor.effects.find(e => concOf(e) && !oldConc.has(e.id));
+    if (conc) {
+      const stale = [...oldConc].filter(id => actor.effects.has(id));
+      if (stale.length) await actor.deleteEmbeddedDocuments("ActiveEffect", stale);
+      return conc.addDependent(effect);
+    }
     await new Promise(r => setTimeout(r, 300));
   }
 }

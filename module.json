@@ -2,7 +2,7 @@
   "id": "sylvies-senses",
   "title": "Sylvie's Senses",
   "description": "Automates the detection spells (Detect Evil and Good, Detect Magic, Detect Poison and Disease) with JB2A auras only the caster sees, GM notes on tiles and tokens, and secret poisons with a duration prompt and saving throws.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Yagoks"
@@ -35,5 +35,5 @@
   "socket": true,
   "url": "https://github.com/Yagoks/sylvies-senses",
   "manifest": "https://github.com/Yagoks/sylvies-senses/releases/latest/download/module.json",
-  "download": "https://github.com/Yagoks/sylvies-senses/releases/download/v0.1.0/module.zip"
+  "download": "https://github.com/Yagoks/sylvies-senses/releases/download/v0.1.1/module.zip"
 }
