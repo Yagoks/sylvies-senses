@@ -17,6 +17,9 @@ While the sense lasts:
   NPC casters' auras, and players' too if *GM sees the players' senses* is on.
 - **Blocking:** walls block the sense, sight walls and closed doors included. A target marked *shielded* (lead, metal,
   thick stone) is never found.
+- **Hidden from divination:** a creature is never found while it wears an **Amulet of Proof against Detection and
+  Location** (equipped and attuned), is under **Nondetection**, or carries an item or effect flagged
+  `flags.sylvies-senses.blocksDetection`.
 - **Tooltip:** hovering a marked target shows what was sensed, to the caster only.
 
 | Spell | Finds | Aura |
@@ -32,7 +35,8 @@ While the sense lasts:
 
 ## GM notes (tiles and tokens)
 
-The eye button on the Tile HUD and the Token HUD (GM only) sets what the spells find there:
+The eye button on the Tile HUD and the Token HUD (GM only) sets what the spells find there. Hidden tiles count too, so
+an invisible tile is how you mark magic or poison on the ground or over an area.
 - **Magic:** a school and a note, e.g. a rune-carved rock.
 - **Poison or disease:** a name, e.g. a cup of wine.
 - **Consecrated or desecrated ground:** for Hallow.

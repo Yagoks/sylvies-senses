@@ -5,7 +5,7 @@
 // Hovering a marked target shows what was sensed; clicking an unexamined magic aura spends the Magic action.
 
 import { MODULE_ID, getF, setF, setting } from "./settings.js";
-import { FILES, findings, noteOf } from "./sources.js";
+import { FILES, findings, isShielded, noteOf } from "./sources.js";
 
 export const SENSES = {
   "detect-evil-and-good": "evil-good",
@@ -105,12 +105,13 @@ function compute() {
   if (!sensors.length) return want;
   const targets = [
     ...canvas.tokens.placeables.filter(t => t.actor && (!t.document.hidden || game.user.isGM)).map(p => [p, false]),
-    ...canvas.tiles.placeables.filter(t => noteOf(t.document).kind && (!t.document.hidden || game.user.isGM)).map(p => [p, true])
+    // Hidden tiles count too: an invisible tile is how the GM marks magic or poison on the ground or in an area.
+    ...canvas.tiles.placeables.filter(t => noteOf(t.document).kind).map(p => [p, true])
   ];
   for (const sensor of sensors) {
     for (const [placeable, isTile] of targets) {
       if (placeable === sensor.token) continue;
-      if (noteOf(placeable.document).shielded) continue;
+      if (isShielded(placeable, isTile)) continue;
       const found = findings(sensor.sense, placeable, isTile, sensor.revealed);
       if (!found.length || !inReach(sensor, placeable)) continue;
       const f = found[0];

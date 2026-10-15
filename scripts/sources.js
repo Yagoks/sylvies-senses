@@ -7,6 +7,38 @@ import { MODULE_ID, getF } from "./settings.js";
 export const noteOf = doc => getF(doc, "note") ?? {};
 
 /* -------------------------------------------- */
+/*  Hidden from divination                      */
+/* -------------------------------------------- */
+
+const BLOCKERS = /proof against detection|nondetection/i;
+
+/** Worn and attuned (when it needs attunement). */
+const worn = item => (item.system.equipped ?? true) && (item.system.attunement === "required" ? !!item.system.attuned : true);
+
+/**
+ * Nothing is detected on this target: the GM marked it shielded (lead, thick stone), or the creature is hidden from
+ * divination (Amulet of Proof against Detection and Location, Nondetection, or anything flagged blocksDetection).
+ */
+export function isShielded(placeable, isTile) {
+  const doc = placeable.document;
+  if (noteOf(doc).shielded) return true;
+  if (isTile) return false;
+  const actor = doc.actor;
+  if (!actor) return false;
+  for (const item of actor.items) {
+    if (item.type === "spell") continue;
+    const blocks = getF(item, "blocksDetection") || BLOCKERS.test(item.name) || BLOCKERS.test(item.system.identifier?.replace(/-/g, " ") ?? "");
+    if (blocks && worn(item)) return true;
+  }
+  for (const effect of actor.appliedEffects ?? []) {
+    if (getF(effect, "blocksDetection") || BLOCKERS.test(effect.name)) return true;
+    const origin = effect.origin ? fromUuidSync(effect.origin, { strict: false }) : null;
+    if (origin?.type === "spell" && BLOCKERS.test(origin.name)) return true;
+  }
+  return false;
+}
+
+/* -------------------------------------------- */
 /*  Animations                                  */
 /* -------------------------------------------- */
 
